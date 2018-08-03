@@ -1,20 +1,22 @@
 version: '3'
 services:
-  mysql:
+  mysql80:
     build: ./mysql
     ports:
       - '3306:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: pass
-    volumes:
+    volumes:   
       - ./mysql/data:/var/lib/mysql
-  php:
+    tty: true
+  apache24:
     build: ./apache
+    command: systemctl enable httpd
     ports:
       - '80:80'
     volumes:
       - ../../:/var/www/html
     tty: true
+    privileged: true
+    command: /sbin/init
     depends_on:
-      - mysql
+      - mysql80
 

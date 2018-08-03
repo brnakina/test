@@ -1,10 +1,19 @@
-FROM scratch
-ADD centos-7-docker.tar.xz /
+FROM centos:7
 
-LABEL org.label-schema.schema-version = "1.0" \
-    org.label-schema.name="CentOS Base Image" \
-    org.label-schema.vendor="CentOS" \
-    org.label-schema.license="GPLv2" \
-    org.label-schema.build-date="20180531"
+MAINTAINER iKato <brnakina@gmail.com>
 
-CMD ["/bin/bash"]
+RUN yum update -y
+RUN yum upgrade -y
+RUN yum install -y epel-release
+RUN yum install -y http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+RUN yum install -y libpng-devel git vim httpd mod_ssl
+RUN yum install -y php php-common
+RUN yum install -y composer
+RUN yum --enablerepo=remi-php72 install -y php php-cli php-devel php-common php-mbstring php-mysql php-fpm php-gd php-mcrypt php-opcache php-pdo php-xml php-json php-ctype php-zip
+RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
+RUN yum install -y nodejs
+RUN systemctl enable httpd
+
+ADD ./modernstandard.conf /etc/httpd/conf.d/modernstandard.conf
+
+CMD ["systemctl", "start", "httpd"]
